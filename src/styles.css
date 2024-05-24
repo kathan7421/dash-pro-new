@@ -1,0 +1,10 @@
+/* styles.css */
+.switch .p-inputswitch-slider {
+    background-color: red !important;
+}
+.switch .p-inputswitch-slider:before {
+    background-color: white !important;
+}
+.switch .p-inputswitch.p-inputswitch-checked .p-inputswitch-slider {
+    background: green !important;
+}

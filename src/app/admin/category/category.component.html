@@ -1,0 +1,76 @@
+<!-- Button trigger modal -->
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+    Add New Category
+</button>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Add New Category</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form [formGroup]="categoryForm" (ngSubmit)="onSubmit()">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="inputName">Name</label>
+                        <input type="text" class="form-control" id="inputName" placeholder="Enter name" formControlName="name">
+                        <div *ngIf="categoryForm.get('name')?.invalid && categoryForm.get('name')?.touched" class="text-danger">Name is required</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputDescription">Description</label>
+                        <textarea class="form-control" id="inputDescription" placeholder="Enter description" formControlName="description"></textarea>
+                        <div *ngIf="categoryForm.get('description')?.invalid && categoryForm.get('description')?.touched" class="text-danger">Description is required</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputImage">Image</label>
+                        <div class="input-group">
+                            <div class="custom-file">
+                                <input type="file" class="custom-file-input" id="inputImage" formControlName="image">
+                                <label class="custom-file-label" for="inputImage">Choose image</label>
+                            </div>
+                        </div>
+                        <div *ngIf="categoryForm.get('image')?.invalid && categoryForm.get('image')?.touched" class="text-danger">Image is required</div>
+                    </div>
+                    <!-- Add more validation messages as needed -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+  
+<p-table [value]="categories" dataKey="id" [rowHover]="true" [rows]="10" [showCurrentPageReport]="true" [rowsPerPageOptions]="[10,25,50]" [paginator]="true" [filterDelay]="0" [globalFilterFields]="['name','status']">
+    <ng-template pTemplate="header">
+        <tr>
+            <th>Index</th>
+            <th pSortableColumn="id">Category ID <p-sortIcon field="id"></p-sortIcon></th>
+            <th pSortableColumn="name">Name<p-sortIcon field="name"></p-sortIcon></th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-category let-i="rowIndex">
+        <tr>
+            <td>{{ i + 1 }}</td>
+            <td>{{ category.id }}</td>
+            <td>{{ category.name }}</td>
+            <img [src]="getImageUrl(category.image)" alt="Category Image">
+
+            <td>
+                <p-inputSwitch class="switch" [ngModel]="category.status === '0'" (onChange)="onToggleChange(category.id, $event.checked)"></p-inputSwitch>
+            </td>
+            <td>
+                <button class="btn btn-primary"><i class="fas fa-edit"></i></button>
+                <button class="btn btn-danger" (click)="deleteCategory(category.id)"><i class="fas fa-trash"></i></button>
+            </td>
+        </tr>
+    </ng-template>
+</p-table>
+

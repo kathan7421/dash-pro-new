@@ -1,0 +1,4 @@
+.fa-power-off:before{
+    content: "\f2f5";
+    color: red;
+}
