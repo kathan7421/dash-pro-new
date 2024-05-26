@@ -13,7 +13,7 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form [formGroup]="categoryForm" (ngSubmit)="onSubmit()">
+            <form [formGroup]="categoryForm" (ngSubmit)="onSubmit()" >
                 <div class="modal-body">
                     <div class="form-group">
                         <label for="inputName">Name</label>
@@ -29,7 +29,7 @@
                         <label for="inputImage">Image</label>
                         <div class="input-group">
                             <div class="custom-file">
-                                <input type="file" class="custom-file-input" id="inputImage" formControlName="image">
+                                <input type="file" class="custom-file-input" id="inputImage" formControlName="image"  (change)="onFileChange($event)">
                                 <label class="custom-file-label" for="inputImage">Choose image</label>
                             </div>
                         </div>
@@ -61,7 +61,7 @@
             <td>{{ i + 1 }}</td>
             <td>{{ category.id }}</td>
             <td>{{ category.name }}</td>
-            <img [src]="getImageUrl(category.image)" alt="Category Image">
+            <img [src]="category.image" alt="Category Image">
 
             <td>
                 <p-inputSwitch class="switch" [ngModel]="category.status === '0'" (onChange)="onToggleChange(category.id, $event.checked)"></p-inputSwitch>
