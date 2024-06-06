@@ -1,0 +1,12 @@
+.p-inputtext {
+    margin: 0;
+    width: 100%;
+}
+
+  
+.ng-invalidk {
+    border: 1px solid red;
+  }
+  /* .ng-dirtyk {
+    background-color: #ffcccc;
+  } */

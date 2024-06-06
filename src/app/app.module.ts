@@ -25,6 +25,21 @@ import { ToastModule } from 'primeng/toast';
 import { CheckboxModule } from 'primeng/checkbox';
 import { ToggleButtonModule } from 'primeng/togglebutton';
 import {InputSwitchModule} from 'primeng/inputswitch';
+// import { InputTextModule } from 'primeng/inputtext';
+import { MessageService } from 'primeng/api';
+import { DialogService } from 'primeng/dynamicdialog';
+
+import { DialogModule } from 'primeng/dialog';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { AuthInterceptor } from './admin/auth.interceptor';
+import { ProductsComponent } from './admin/products/products.component';
+import { FileUploadModule } from 'primeng/fileupload';
+import { OrdersComponent } from './admin/orders/orders.component';
+import { UsersComponent } from './admin/users/users.component';
+import { BannersComponent } from './admin/banners/banners.component';
+import {ChartModule} from 'primeng/chart';
+import { OrderStatusChartComponent } from './admin/orders/order-status-chart/order-status-chart.component';
+import { NotFoundComponent } from './admin/not-found/not-found.component';
 
 
 @NgModule({
@@ -35,7 +50,14 @@ import {InputSwitchModule} from 'primeng/inputswitch';
     DashboardComponent,
     SidebarComponent,
     FooterComponent,
-    CategoryComponent
+    CategoryComponent,
+    ProductsComponent,
+    OrdersComponent,
+    UsersComponent,
+    BannersComponent,
+    OrderStatusChartComponent,
+    NotFoundComponent,
+   
   ],
   imports: [
     BrowserModule,
@@ -53,12 +75,24 @@ import {InputSwitchModule} from 'primeng/inputswitch';
     ButtonModule,
     ToastModule,
     CheckboxModule,
+    InputTextModule,
     FormsModule,
     ToggleButtonModule,
-    InputSwitchModule
+    InputSwitchModule,
+    DialogModule,
+    FileUploadModule,
+    ChartModule
   ],
 
-  providers: [],
+  providers: [
+    MessageService,
+    DialogService,
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthInterceptor,
+      multi: true
+    }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

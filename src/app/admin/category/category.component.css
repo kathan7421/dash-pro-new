@@ -5,3 +5,6 @@ img {
     display: flex;
     justify-content: center;
 }
+button {
+    margin-right: 5px !important;
+}

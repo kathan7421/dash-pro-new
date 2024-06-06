@@ -1,0 +1,27 @@
+.p-inputtext {
+    margin: 0;
+    width: 100% !important;
+}
+.p-button {
+    color: #ffffff;
+    background: #2196F3;
+    border: 1px solid #2196F3;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
+    margin-right: 10px !important;
+    border-radius: 3px;
+}
+button.p-ripple.p-element.p-button.p-component {
+    margin-right: 20px !important;
+}
+img {
+    width: 80px;
+    height: 80px;
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+}
+button {
+    margin-right: 5px !important;
+}

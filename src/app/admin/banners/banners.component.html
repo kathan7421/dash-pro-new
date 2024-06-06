@@ -1,0 +1,62 @@
+<p-button (click)="showDialog()" label="Add Banner +"></p-button>
+<p-dialog header="Add New Banner" [modal]="true" [(visible)]="visible" [style]="{ width: '50em' }">
+    <!-- <span class="p-text-secondary block mb-5">Add Products.</span> -->
+    <form [formGroup]="bannerForm"  (ngSubmit)="onSubmit()">
+       <!-- bannerss.component.html -->
+
+        <div class="flex align-items-center gap-3 mb-3">
+            <label for="name" class="font-semibold w-6rem">Name</label>
+            <input pInputText id="title" formControlName="title" class="flex-auto"  [ngClass]="{
+                'ng-invalidk': bannerForm.controls['title'].invalid && bannerForm.controls['title'].touched,
+                'ng-dirtyk': bannerForm.controls['title'].dirty
+              }" autocomplete="off" />
+            <div *ngIf="bannerForm.controls['title']?.invalid && bannerForm.controls['title']?.touched" class="text-danger">
+            Name is required
+            </div>
+        </div>
+        <div class="flex align-items-center gap-3 mb-3">
+            <label for="price" class="font-semibold w-6rem">Priority</label>
+            <input pInputText id="priority" formControlName="priority" class="flex-auto" [ngClass]="{
+                'ng-invalidk': bannerForm.controls['priority'].invalid && bannerForm.controls['priority'].touched,
+                'ng-dirtyk': bannerForm.controls['priority'].dirty
+              }" autocomplete="off" />
+            <div *ngIf="bannerForm.controls['priority'].invalid && bannerForm.controls['priority'].touched" class="text-danger">
+                Priority is required.
+            </div>
+        </div>
+        <div class="flex align-items-center gap-3 mb-3">
+            <label for="qty" class="font-semibold w-6rem">Button_text</label>
+            <input pInputText id="button_text" formControlName="button_text" class="flex-auto" [ngClass]="{
+                'ng-invalidk': bannerForm.controls['button_text'].invalid && bannerForm.controls['button_text'].touched,
+                'ng-dirtyk': bannerForm.controls['button_text'].dirty
+              }" autocomplete="off" />
+            <div *ngIf="bannerForm.controls['button_text'].invalid && bannerForm.controls['button_text'].touched" class="text-danger">
+                Button is required.
+            </div>
+        </div>
+        <div class="flex align-items-center gap-3 mb-3">
+            <input type="file" (change)="onFileChange($event)" accept="image/*" />
+            <div *ngIf="bannerForm.controls['image'].invalid && bannerForm.controls['image'].touched  && !isEditMode" class="text-danger">
+                Image is required.
+            </div>
+            <div *ngIf="uploadedImageUrl ">
+                <img [src]="uploadedImageUrl" alt="Uploaded Image" style="width: 100px; height: auto;">
+            </div>
+        </div>
+        <div class="flex align-items-center gap-3 mb-3">
+            <label for="description" class="font-semibold w-6rem">Description</label>
+            <textarea pInputText id="description" formControlName="description" class="flex-auto" [ngClass]="{
+                'ng-invalidk': bannerForm.controls['description'].invalid && bannerForm.controls['description'].touched,
+                'ng-dirtyk': bannerForm.controls['description'].dirty
+              }" autocomplete="off" ></textarea>
+            <div *ngIf="bannerForm.controls['description'].invalid && bannerForm.controls['description'].touched" class="text-danger">
+                Description is required.
+            </div>
+        </div>
+        <div class="flex justify-content-end gap-2">
+            <p-button *ngIf="!isEditMode" label="Save" type="submit"></p-button>
+            <p-button *ngIf="isEditMode" label="Update" type="submit"></p-button>
+          </div>
+          
+    </form>
+</p-dialog>

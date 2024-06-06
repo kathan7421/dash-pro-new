@@ -4,6 +4,12 @@ import { LoginComponent } from './admin/login/login.component';
 import { DashboardComponent } from './admin/dashboard/dashboard.component';
 import { AuthGuard } from './authguard.service'; // Correct import path
 import { CategoryComponent } from './admin/category/category.component';
+import { ProductsComponent } from './admin/products/products.component';
+import { OrdersComponent } from './admin/orders/orders.component';
+import { BannersComponent } from './admin/banners/banners.component';
+import { DashboardResolver } from './admin/dashboard/dashboard-resolver.service';
+import { NotFoundComponent } from './admin/not-found/not-found.component';
+
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent, data: { breadcrumb: 'Login' } },
@@ -12,8 +18,15 @@ const routes: Routes = [
     canActivate: [AuthGuard], // Applying auth guard to all admin routes
     children: [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' }, // Redirect to dashboard if no child path is provided
-      { path: 'dashboard', component: DashboardComponent, data: { breadcrumb: 'Dashboard' } }, 
-      { path: 'category', component: CategoryComponent, data: { breadcrumb: 'Dashboard' } }, 
+      { path: 'dashboard', component: DashboardComponent,resolve: {
+        counts: DashboardResolver
+      } }, 
+      { path: 'category', component: CategoryComponent }, 
+      { path: 'product', component: ProductsComponent }, 
+      {path: 'orders', component: OrdersComponent},
+      {path: 'banners',component:BannersComponent}
+
+
       
       
       // Dashboard route
@@ -22,7 +35,7 @@ const routes: Routes = [
     ]
   },
   { path: '', redirectTo: '/admin/dashboard', pathMatch: 'full' }, // Redirect to admin dashboard if no path is provided
-  { path: '**', redirectTo: '/admin/dashboard' } // Redirect to admin dashboard if route not found
+  { path: '**', component:NotFoundComponent } // Redirect to admin dashboard if route not found
 ];
 
 @NgModule({

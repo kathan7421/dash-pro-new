@@ -8,3 +8,15 @@
 .switch .p-inputswitch.p-inputswitch-checked .p-inputswitch-slider {
     background: green !important;
 }
+section.content {
+    height: 115vh;
+    overflow: auto;
+}
+.p-dropdown {
+    display: inline-flex;
+    cursor: pointer;
+    position: relative;
+    -webkit-user-select: none;
+    width: 100% !important;
+    user-select: none;
+}
