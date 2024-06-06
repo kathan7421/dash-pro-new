@@ -69,20 +69,11 @@ export class CategoryComponent implements OnInit {
       formData.append('image', this.categoryForm.get('image')!.value);
 
       this.categoryService.addCategory(formData).subscribe(
-      const formData = new FormData();
-      formData.append('name', this.categoryForm.get('name')!.value);
-      formData.append('description', this.categoryForm.get('description')!.value);
-      formData.append('image', this.categoryForm.get('image')!.value);
-
-      this.categoryService.addCategory(formData).subscribe(
         response => {
-          this.toastr.success('Category added successfully');
           this.toastr.success('Category added successfully');
           console.log('Category added successfully:', response);
 
-
           this.categoryForm.reset();
-          this.loadCategories();
           this.loadCategories();
         },
         error => {
@@ -158,15 +149,6 @@ export class CategoryComponent implements OnInit {
       });
     }
   }
-  
-  onFileChange(event: any): void {
-    if (event.target.files.length > 0) {
-      const file = event.target.files[0];
-      this.categoryForm.patchValue({
-        image: file
-      });
-    }
-  }
   onFileChangeEdit(event: any): void {
     if (event.target.files.length > 0) {
         const file = event.target.files[0];
@@ -209,9 +191,6 @@ getPreviewImage(): string | ArrayBuffer | null {
     }
 }
 
-  // getImageUrl(imagePath: string): string {
-  //   return `http://localhost/apilaravelpractice/storage/app/public/images/${imagePath}`;
-  // }
   // getImageUrl(imagePath: string): string {
   //   return `http://localhost/apilaravelpractice/storage/app/public/images/${imagePath}`;
   // }
