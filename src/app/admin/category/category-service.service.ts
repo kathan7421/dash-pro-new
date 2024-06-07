@@ -30,4 +30,7 @@ export class CategoryService {
   updateCategory(categoryId: number, updatedData: any): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/update/${categoryId}`, updatedData);
   }
+  getCategoryById(categoryId: number): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/${categoryId}`);
+  }
 }

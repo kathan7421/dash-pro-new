@@ -1,11 +1,11 @@
-// category.component.ts
 import { Component, OnInit } from '@angular/core';
 import { CategoryService } from './category-service.service';
 import { AuthService } from 'src/app/auth-service.service';
 import { ToastrService } from 'ngx-toastr';
 import Swal from 'sweetalert2';
-import { FormGroup ,Validators,FormBuilder} from '@angular/forms';
+import { FormGroup, Validators, FormBuilder } from '@angular/forms';
 import { DialogService } from 'primeng/dynamicdialog';
+import { SelectItem } from 'primeng/api';
 
 @Component({
   selector: 'app-category',
@@ -17,192 +17,174 @@ export class CategoryComponent implements OnInit {
   editingCategory: any;
   display: boolean = false;
   categoryForm!: FormGroup;
-  categoryeditForm!: FormGroup;
+  isEditMode: boolean = false;
+  categoriesnew!: SelectItem[];
+  visible: boolean = false;
+  uploadedImageUrl!: string;
+  base64textString: string | null = null;
   imagePreviewUrl: string | ArrayBuffer | null = null;
 
-  category: any;
-  constructor(private categoryService: CategoryService ,private authService: AuthService,private toastr: ToastrService,private fb: FormBuilder,  public dialogService: DialogService  // Reference to the dialog
-     ) { }
-  loading: boolean = true;
-  
+  constructor(
+    private categoryService: CategoryService,
+    private authService: AuthService,
+    private toastr: ToastrService,
+    private fb: FormBuilder,
+    public dialogService: DialogService
+  ) { }
+
   ngOnInit(): void {
     this.categoryForm = this.fb.group({
       name: ['', Validators.required],
       description: ['', Validators.required],
-      image: ['', Validators.required]
-    });
-    this.categoryeditForm = this.fb.group({
-      name: ['', Validators.required],
-      description: ['', Validators.required],
-      image: ['']  // You may or may not need to include validators for image editing
+      image: ['']
     });
     this.loadCategories();
   }
-  
-  // onSubmit(): void {
-  //   if (this.categoryForm.valid) {
-  //     // Call the service to add the category
-  //     this.categoryService.addCategory(this.categoryForm.value).subscribe(
-  //       response => {
-  //         this.toastr.success('Status Changed Successfully');
-  //         console.log('Category added successfully:', response);
-         
-  //         // Reset the form after successful submission
-  //         this.categoryForm.reset();
-  //         // Optionally, reload the categories list
-  //         // this.loadCategories();
-  //       },
-  //       error => {
-  //         console.error('Error adding category:', error);
-  //       }
-  //     );
-  //   } else {
-  //     // Mark all fields as touched to display validation errors
-  //     this.markAllAsTouched();
-  //   }
-  // }
-  onSubmit(): void {
-    if (this.categoryForm.valid) {
-      const formData = new FormData();
-      formData.append('name', this.categoryForm.get('name')!.value);
-      formData.append('description', this.categoryForm.get('description')!.value);
-      formData.append('image', this.categoryForm.get('image')!.value);
 
-      this.categoryService.addCategory(formData).subscribe(
-        response => {
-          this.toastr.success('Category added successfully');
-          console.log('Category added successfully:', response);
-
-          this.categoryForm.reset();
-          this.loadCategories();
-        },
-        error => {
-          console.error('Error adding category:', error);
-        }
-      );
+  showDialog(category?: any) {
+    this.categoryForm.reset();
+    this.visible = true;
+    this.isEditMode = false;
+    this.imagePreviewUrl = null;
+    if (category) {
+      this.editingCategory = category;
+      this.categoryForm.patchValue({
+        name: category.name,
+        description: category.description
+      });
+      this.imagePreviewUrl = category.image; // Display old image if available
+      this.isEditMode = true;
     } else {
-      this.markAllAsTouched();
+      this.editingCategory = null;
+      this.categoryForm.reset();
+    }
+    this.display = true;
+  }
+
+  onFileChange(event: any): void {
+    const files = event.target.files;
+    const file = files[0];
+
+    if (files && file) {
+      const reader = new FileReader();
+
+      reader.onload = () => {
+        this.base64textString = reader.result as string;
+        this.categoryForm.patchValue({ image: this.base64textString });
+        this.uploadedImageUrl = this.base64textString;
+      };
+
+      reader.readAsDataURL(file);
     }
   }
-  oneditSubmit() {
-    if (this.categoryeditForm?.valid) {
-      const formData = new FormData();
-      formData.append('name', this.categoryeditForm.get('name')!.value);
-      formData.append('description', this.categoryeditForm.get('description')!.value);
-      formData.append('image', this.categoryeditForm.get('image')!.value);
+
+  getPreviewImage(): string | ArrayBuffer | null {
+    if (!this.base64textString && this.imagePreviewUrl) {
+      return this.imagePreviewUrl; // Display old image if not updating
+    } else if (this.imagePreviewUrl && this.base64textString) {
+      return this.base64textString; // Display new image if updating
+    }
+    return null;
+  }
   
-      if (this.editingCategory) {
-        const categoryId = this.editingCategory.id; // Assuming category id is stored in the 'id' property
-        this.categoryService.updateCategory(categoryId, formData).subscribe(
-          response => {
-            this.toastr.success('Category updated successfully');
-            console.log('Category updated successfully:', response);
-            this.hideDialog();
-            this.loadCategories();
-          },
-          error => {
-            console.error('Error updating category:', error);
-            this.toastr.error('Error updating category');
-          }
-        );
+  onSubmit(): void {
+    if (this.categoryForm.valid) {
+      const formData = this.categoryForm.value;
+      if (this.isEditMode) {
+        if (!this.base64textString) {
+          // No new image uploaded, so keep the existing image
+          formData.image = this.editingCategory.image;
+        }
+        this.updateCategory(this.editingCategory.id, formData);
       } else {
-        console.error('Editing category not found.');
-        this.toastr.error('Editing category not found.');
+        this.addCategory(formData);
       }
     } else {
       this.markAllAsTouched();
     }
   }
   
-
-  showDialog(category?: any) {
-    if (category) {
-      this.editingCategory = category;
-      this.categoryeditForm.patchValue({
-        id: category.id,
-        name: category.name,
-        description: category.description,
-        image: category.image // Assuming you have the image path in the category object
-      });
-    } else {
-      this.editingCategory = null;
-      this.categoryeditForm.reset();
-    }
-    this.display = true;
+  setEditMode(isEdit: boolean) {
+    this.isEditMode = isEdit;
   }
-
-  hideDialog() {
-    this.display = false;
+  openEditDialog(categoryId: number): void {
+    this.setEditMode(true);
+    this.categoryService.getCategoryById(categoryId).subscribe(
+      (response: any) => {
+        this.editingCategory = response.data;
+        this.categoryForm.patchValue(response.data);
+        // Check if a new image is uploaded; if not, display the old image
+        if (!this.base64textString) {
+          this.uploadedImageUrl = response.data.image;
+        }
+        this.visible = true;
+      },
+      error => {
+        console.error('Error fetching category details:', error);
+      }
+    );
   }
   
+  hideDialog() {
+    this.display = false;
+    this.visible = false;
+  }
+
+  addCategory(newCategoryData: any): void {
+    this.categoryService.addCategory(newCategoryData).subscribe(
+      response => {
+        this.toastr.success('Category added successfully');
+        this.categoryForm.reset();
+        this.loadCategories();
+        this.hideDialog();
+      },
+      error => {
+        console.error('Error adding category:', error);
+        this.toastr.error('Error adding category');
+      }
+    );
+  }
+
+  updateCategory(categoryId: number, updatedData: any): void {
+    this.categoryService.updateCategory(categoryId, updatedData).subscribe(
+      response => {
+        this.toastr.success('Category updated successfully');
+        this.hideDialog();
+        this.loadCategories();
+      },
+      error => {
+        console.error('Error updating category:', error);
+        this.toastr.error('Error updating category');
+      }
+    );
+  }
+
+  loadCategories(): void {
+    if (this.authService.isLoggedIn()) {
+      this.categoryService.getCategories().subscribe(
+        response => {
+          this.categories = response.data;
+        },
+        error => {
+          console.error('Error fetching categories:', error);
+        }
+      );
+    } else {
+      console.error('User not logged in.');
+    }
+  }
   markAllAsTouched(): void {
     Object.values(this.categoryForm.controls).forEach(control => {
       control.markAsTouched();
     });
   }
-  
-  onFileChange(event: any): void {
-    if (event.target.files.length > 0) {
-      const file = event.target.files[0];
-      this.categoryForm.patchValue({
-        image: file
-      });
-    }
-  }
-  onFileChangeEdit(event: any): void {
-    if (event.target.files.length > 0) {
-        const file = event.target.files[0];
-        this.categoryeditForm.patchValue({
-            image: file
-        });
-        // Generate a preview URL for the selected image
-        const reader = new FileReader();
-        reader.onload = () => {
-            this.imagePreviewUrl = reader.result;
-        };
-        reader.readAsDataURL(file);
-    }
-}
-getPreviewImage(): string | ArrayBuffer | null {
-  if (this.imagePreviewUrl) {
-      return this.imagePreviewUrl;
-  } else if (this.editingCategory && this.editingCategory.image) {
-      return this.editingCategory.image;
-  }
-  return null;
-}
-
-
-
-  loadCategories(): void {
-    if (this.authService.isLoggedIn()) {
-        this.categoryService.getCategories().subscribe(
-            response => {
-                console.log('API Response:', response); // Debugging line
-                this.categories = response.data;
-                console.log('Categories:', this.categories); // Debugging line
-            },
-            error => {
-                console.error('Error fetching categories:', error);
-            }
-        );
-    } else {
-        console.error('User not logged in.');
-    }
-}
-
-  // getImageUrl(imagePath: string): string {
-  //   return `http://localhost/apilaravelpractice/storage/app/public/images/${imagePath}`;
-  // }
   updateCategoryStatus(categoryId: number, status: boolean): void {
     const newStatus = status ? 1 : 0;
     this.categoryService.updateCategoryStatus(categoryId, newStatus).subscribe(
       response => {
-        console.log('Category status updated successfully:', response);
         const message = newStatus === 1 ? 'You have made the status Active' : 'You have made the status Inactive';
         this.toastr.success(message, 'Status Changed Successfully');
-  
-        // Update the status locally
+
         const category = this.categories.find(cat => cat.id === categoryId);
         if (category) {
           category.status = newStatus;
@@ -217,6 +199,7 @@ getPreviewImage(): string | ArrayBuffer | null {
   onToggleChange(categoryId: number, status: boolean): void {
     this.updateCategoryStatus(categoryId, status);
   }
+
   deleteCategory(categoryId: number): void {
     Swal.fire({
       title: 'Are you sure?',
@@ -229,7 +212,6 @@ getPreviewImage(): string | ArrayBuffer | null {
       if (result.isConfirmed) {
         this.categoryService.deleteCategory(categoryId).subscribe(
           response => {
-            console.log('Category deleted successfully:', response);
             this.loadCategories();
             Swal.fire('Deleted!', 'The category has been deleted.', 'success');
           },
@@ -243,5 +225,4 @@ getPreviewImage(): string | ArrayBuffer | null {
       }
     });
   }
-  
 }

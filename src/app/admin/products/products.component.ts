@@ -20,7 +20,7 @@ export class ProductsComponent implements OnInit {
   product!: Product;
   categories: Category[] = [];
   isEditMode: boolean = false;
-  loading!: boolean;
+  loading: boolean = true;
   selectedCategoryId!: any;
   productForm!: FormGroup;
   temp: any;
@@ -129,17 +129,17 @@ onSubmit(): void {
     const productValue: Product = this.productForm.value;
 
     // Convert the image to base64 if necessary
-    if (this.base64textString) {
-      productValue.image = this.base64textString; // Set the base64 string to the image property
+    // if (this.base64textString) {
+    //   productValue.image = this.base64textString; // Set the base64 string to the image property
      
-      console.log(productValue);
-      // debugger;
-    }
+    //   console.log(productValue);
+    //   // debugger;
+    // }
 
     if (this.isEditMode && this.product) {
-      if (!this.base64textString) {
-        productValue.image = this.product.image; // Retain the existing image
-    }
+    //   if (!this.base64textString) {
+    //     productValue.image = this.product.image; // Retain the existing image
+    // }
        console.log(this.temp.value);
        productValue.category_id = this.temp.value;
       const productId = this.product.id;
@@ -165,6 +165,7 @@ onSubmit(): void {
         image: productValue.image,
         qty: productValue.qty,
         slug: productValue.slug,
+        product_no: productValue.product_no,
         category_id: this.temp.value + ''
       }
 
@@ -237,7 +238,6 @@ deleteProduct(productId: number): void {
 
   loadProducts(): void {
     // debugger;
-    this.loading = true;
     this.productService.getAllproduct().subscribe(
       (response : any) => {
         console.log('API Response:', response);
@@ -247,19 +247,15 @@ deleteProduct(productId: number): void {
           ...product,
           category_name: this.getCategoryNameById(product.category_id)
         }));
-          this.loading = false;
 
         console.log(response);
-        // setTimeout(() => {
-        //   this.loading = false;
-        // }, 1000);
+        this.loading = false;
         // Debugging line
         // this.products = response.data; // Assuming data is the array of products
         // console.log('Products:', this.products); // Debugging line
       },
       error => {
         console.error('Error fetching products:', error);
-        this.loading = false;
       }
     );
   }
@@ -271,10 +267,6 @@ deleteProduct(productId: number): void {
   ngOnInit(): void {
     this.loadCategories();
     this.loadProducts();
-
-    setTimeout(() => {
-      console.log(this.products)
-    }, 5000);
   }
 
   showDialog() {    

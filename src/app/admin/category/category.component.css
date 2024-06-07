@@ -8,3 +8,9 @@ img {
 button {
     margin-right: 5px !important;
 }
+input {
+    width: 100%;
+}
+textarea{
+    width: 100%;
+}

@@ -1,5 +1,5 @@
 <p-button (click)="showDialog()" label="Add Product +"></p-button>
-<p-dialog header="Add New Product" [modal]="true" [(visible)]="visible" [style]="{ width: '50em' }">
+<p-dialog header="{{ isEditMode ? 'Edit Product' : 'Add Product'}}" [modal]="true" [(visible)]="visible" [style]="{ width: '50em' }">
     <!-- <span class="p-text-secondary block mb-5">Add Products.</span> -->
     <form [formGroup]="productForm"  (ngSubmit)="onSubmit()">
        <!-- products.component.html -->
@@ -45,9 +45,10 @@
             <div *ngIf="productForm.controls['image'].invalid && productForm.controls['image'].touched  && !isEditMode" class="text-danger">
                 Image is required.
             </div>
-            <div *ngIf="uploadedImageUrl && isEditMode">
+            <div *ngIf="uploadedImageUrl || (isEditMode && uploadedImageUrl)">
                 <img [src]="uploadedImageUrl" alt="Uploaded Image" style="width: 100px; height: auto;">
             </div>
+            
         </div>
         <div class="flex align-items-center gap-3 mb-3">
             <label for="description" class="font-semibold w-6rem">Description</label>
@@ -63,11 +64,11 @@
           
     </form>
 </p-dialog>
-<p-table [value]="products"  [loading]="loading" [lazy]="true"  dataKey="id" [rowHover]="true" [rows]="10" [showCurrentPageReport]="true" [rowsPerPageOptions]="[10,25,50]" [paginator]="true" [filterDelay]="0" [globalFilterFields]="['name','status']">
+<p-table [value]="products"  [loading]="loading"  [lazy]="true"  dataKey="id" [rowHover]="true" [rows]="10" [showCurrentPageReport]="true" [rowsPerPageOptions]="[10,25,50]" [paginator]="true" [filterDelay]="0" [globalFilterFields]="['name','status']">
     <ng-template pTemplate="header">
         <tr>
             <th>Index</th>
-            <th pSortableColumn="id">Category ID <p-sortIcon field="id"></p-sortIcon></th>
+            <th pSortableColumn="category_name">Category ID <p-sortIcon field="category_name"></p-sortIcon></th>
             <th>ID</th>
             <th pSortableColumn="name">Name<p-sortIcon field="name"></p-sortIcon></th>
            <th>Image</th>
@@ -82,7 +83,7 @@
             <td>{{ product.id }}</td>
             <td>{{product.name}}</td>
             <td>
-                <img [src]="product.image" alt="Product Image">
+            <img [src]="product.image" alt="Product Image">
             </td>
 
             <td>

@@ -1,10 +1,10 @@
 <!-- Button trigger modal -->
-<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+<!-- <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
     Add New Category
-</button>
+</button> -->
 <!-- add modal  -->
 <!-- Modal -->
-<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<!-- <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -34,8 +34,11 @@
                             </div>
                         </div>
                         <div *ngIf="categoryForm.get('image')?.invalid && categoryForm.get('image')?.touched" class="text-danger">Image is required</div>
+                        <div *ngIf="imagePreviewUrl" class="mt-2">
+                            <img [src]="imagePreviewUrl" class="img-fluid" alt="Preview">
+                        </div>
                     </div>
-                    <!-- Add more validation messages as needed -->
+                  
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -44,10 +47,46 @@
             </form>
         </div>
     </div>
-</div>
+</div> -->
+<p-button (click)="showDialog()" label="Add Category +"></p-button>
+<p-dialog header="{{ isEditMode ? 'Edit Category' : 'Add New Category' }}" [modal]="true" [(visible)]="visible" [style]="{ width: '50em' }">
+    <form [formGroup]="categoryForm" (ngSubmit)="onSubmit()">
+        <div class="flex align-items-center gap-3 mb-3">
+            <label for="name" class="font-semibold w-6rem">Name</label>
+            <input pInputText id="name" formControlName="name" class="flex-auto" autocomplete="off" />
+            <div *ngIf="categoryForm.controls['name'].invalid && categoryForm.controls['name'].touched" class="text-danger">
+                Name is required
+            </div>
+        </div>
+        
+        <div class="flex align-items-center gap-3 mb-3">
+            <input type="file" (change)="onFileChange($event)" accept="image/*" />
+            <div *ngIf="categoryForm.controls['image'].invalid && categoryForm.controls['image'].touched && !isEditMode" class="text-danger">
+                Image is required
+            </div>
+            <div *ngIf="uploadedImageUrl">
+                <img [src]="uploadedImageUrl" alt="Uploaded Image" style="width: 100px; height: auto;">
+            </div>
+        </div>
+        
+        <div class="flex align-items-center gap-3 mb-3">
+            <label for="description" class="font-semibold w-6rem">Description</label>
+            <textarea pInputText id="description" formControlName="description" class="flex-auto" autocomplete="off"></textarea>
+            <div *ngIf="categoryForm.controls['description'].invalid && categoryForm.controls['description'].touched" class="text-danger">
+                Description is required.
+            </div>
+        </div>
+        
+        <div class="flex justify-content-end gap-2">
+            <p-button *ngIf="!isEditMode" label="Save" type="submit"></p-button>
+            <p-button *ngIf="isEditMode" label="Update" type="submit"></p-button>
+        </div>
+    </form>
+</p-dialog>
+<!-- new form end -->
 
 <!-- edit modal  -->
-<p-dialog header="Category Form" [(visible)]="display" [modal]="true" [responsive]="true" [style]="{width: '500px'}">
+<!-- <p-dialog header="Category Form" [(visible)]="display" [modal]="true" [responsive]="true" [style]="{width: '500px'}">
     <form [formGroup]="categoryeditForm" (ngSubmit)="oneditSubmit()">
         <div class="modal-body">
             <div class="form-group">
@@ -68,14 +107,14 @@
                 <img *ngIf="getPreviewImage()" [src]="getPreviewImage()" class="img-fluid mt-2" alt="Category Image">
                 
             </div>
-            <!-- Add more form fields and validation messages as needed -->
+         
         </div>
         <div class="modal-footer">
             <button type="button" class="btn btn-secondary" (click)="hideDialog()">Close</button>
             <button type="submit" class="btn btn-primary">Submit</button>
         </div>
     </form>
-</p-dialog>
+</p-dialog> -->
 
 
 <!-- data grid table  -->
@@ -102,7 +141,7 @@
                 <p-inputSwitch class="switch" [ngModel]="category.status === '0'" (onChange)="onToggleChange(category.id, $event.checked)"></p-inputSwitch>
             </td>
             <td>
-                <button class="btn btn-primary" (click)="showDialog(category)"><i class="fas fa-edit"></i></button>
+                <button class="btn btn-primary" (click)="openEditDialog(category.id)"><i class="fas fa-edit"></i></button>
                 <button class="btn btn-danger" (click)="deleteCategory(category.id)"><i class="fas fa-trash"></i></button>
             </td>
         </tr>
