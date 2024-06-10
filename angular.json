@@ -44,7 +44,7 @@
               "node_modules/admin-lte/plugins/chart.js/Chart.min.js",
               "node_modules/admin-lte/dist/js/demo.js",
               "node_modules/admin-lte/dist/js/pages/dashboard2.js",
-              "../node_modules/chart.js/dist/chart.js"
+              "node_modules/chart.js/dist/chart.js"
             ]
           },
           "configurations": {

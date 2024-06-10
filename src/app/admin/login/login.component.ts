@@ -48,7 +48,7 @@ export class LoginComponent implements OnInit {
             localStorage.setItem('currentUser', JSON.stringify(response.user));
             this.toastr.success('Login successful', 'Welcome');
             this.authService.currentUserValue = response;
-            this.router.navigate(['/dashboard']);
+            this.router.navigate(['/admin/dashboard']);
           } else {
             this.toastr.error('Oops! Something went wrong.', 'Error');
           }

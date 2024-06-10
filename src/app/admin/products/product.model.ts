@@ -8,8 +8,8 @@ export interface Product {
     category_id: Catrgories;
     slug: string;
     status: number;
-    product_no:string;
-    image: string;
+    product_no:any;
+    image?: string;
     // updated_at: string;
     // created_at: string;
     // id: number;

@@ -24,7 +24,6 @@ export class ProductsComponent implements OnInit {
   selectedCategoryId!: any;
   productForm!: FormGroup;
   temp: any;
-  // editproductForm!:FormGroup;
   isStatusChecked!: boolean;
   visible: boolean = false;
   uploadedImageUrl!: string;
@@ -36,16 +35,13 @@ export class ProductsComponent implements OnInit {
       description: ['', Validators.required],
       price: ['', Validators.required],
       qty: ['', Validators.required],
-      image: ['' ,Validators.required],
+      image: [''],
+      product_no: [''],
       category_id: ['', Validators.required],  // Hardcoded for now, adjust as necessary
       slug: [''] 
     });
-  
-   }
-  
- // Make sure to import SelectItem
-
- loadCategories(): void {
+  }
+loadCategories(): void {
   this.productService.getAllCategories().subscribe(
     (response: CategoryResponse) => {
       console.log("category",response);
@@ -59,62 +55,51 @@ export class ProductsComponent implements OnInit {
     }
   );
 }
-
-
-
-  // onFileChange(event: any): void {
-  //   console.log("File selected");
-  //   const files = event.target.files;
-  //   const file = files[0];
-  
-  //   if (files && file) {
-  //     const reader = new FileReader();
-  
-  //     reader.onload = () => {
-  //       this.base64textString = reader.result as string; // Store the base64 string
-  //        console.log(this.base64textString); // Output the base64 string
-  //     };
-  
-  //     reader.readAsDataURL(file);
-  //   }
-  // }
-  onFileChange(event: any): void {
+ onFileChange(event: any): void {
     const files = event.target.files;
     const file = files[0];
-
+  
     if (files && file) {
       const reader = new FileReader();
-
-      reader.onload = () => {
+    reader.onload = () => {
         this.base64textString = reader.result as string;
         this.productForm.patchValue({ image: this.base64textString });
         this.uploadedImageUrl = this.base64textString;
       };
-
       reader.readAsDataURL(file);
     }
   }
-  
- 
-
 setEditMode(isEdit: boolean) {
   this.isEditMode = isEdit;
 }
-
 openEditDialog(productId: number): void {
   this.setEditMode(true);
+  this.productForm.reset();
   this.productService.getProductById(productId).subscribe(
-    (response: editProductResponse) => {
+    (response: any) => {
       console.log(response.data);
       this.product = response.data; // Set the product object
-      this.productForm.patchValue(response.data);
-      this.selectedCategoryId = response.data.category_id;
-      this.categoriesnew.find(e => {
-        if (e.value == this.selectedCategoryId) {
-          this.temp = e;
-        }
+      this.productForm.patchValue({
+        name: response.data.name,
+        description: response.data.description,
+        price: response.data.price,
+        qty: response.data.qty,
+        category_id: response.data.category_id,
+        slug: response.data.slug,
+        // Do not patch the image value here
       });
-      this.uploadedImageUrl = response.data.image; // Set the selected category ID
+      this.selectedCategoryId = response.data.category_id;
+      this.temp = this.categoriesnew.find(e => e.value == this.selectedCategoryId);
+      
+      // Explicitly check if productForm and image control are not null before accessing value
+      const imageControl = this.productForm.get('image');
+      if (imageControl !== null && imageControl.value) {
+        // If a new image is selected, update the uploadedImageUrl
+        this.uploadedImageUrl = imageControl.value;
+      } else {
+        // If no new image is selected, set uploadedImageUrl to the existing image URL
+        this.uploadedImageUrl = response.data.image;
+      }
       this.visible = true;
     },
     error => {
@@ -122,33 +107,27 @@ openEditDialog(productId: number): void {
     }
   );
 }
-
-
 onSubmit(): void {
   if (this.productForm.valid) {
     const productValue: Product = this.productForm.value;
-
     // Convert the image to base64 if necessary
-    // if (this.base64textString) {
-    //   productValue.image = this.base64textString; // Set the base64 string to the image property
-     
-    //   console.log(productValue);
-    //   // debugger;
-    // }
-
+    if (this.base64textString && this.productForm.value.image != null) {
+      productValue.image = this.base64textString!; // Set the base64 string to the image property
+    }
+    else {
+      this.productForm.value['image'] = null;
+    }
     if (this.isEditMode && this.product) {
-    //   if (!this.base64textString) {
-    //     productValue.image = this.product.image; // Retain the existing image
-    // }
-       console.log(this.temp.value);
-       productValue.category_id = this.temp.value;
+      productValue.category_id = this.temp.value;
       const productId = this.product.id;
       this.productService.updateProduct(productId, productValue).subscribe(
         response => {
           console.log('Product updated successfully', response);
+          // this.productForm.reset();
           this.toastr.success('Product updated successfully', 'Success');
           this.visible = false;
-          this.loadProducts(); // Reload products after updating
+          this.loadProducts();
+          this.productForm.reset(); // Reload products after updating
         },
         error => {
           console.error('Error updating product', error);
@@ -156,18 +135,17 @@ onSubmit(): void {
         }
       );
     } else {
-      console.log(this.temp);
       // Add new product
-      let obj:AddProduct= {
+      let obj: AddProduct = {
         name: productValue.name,
         price: productValue.price,
         description: productValue.description,
-        image: productValue.image,
+        image: productValue.image!,
         qty: productValue.qty,
         slug: productValue.slug,
         product_no: productValue.product_no,
         category_id: this.temp.value + ''
-      }
+      };
 
       this.productService.addProduct(obj).subscribe(
         response => {
@@ -187,7 +165,6 @@ onSubmit(): void {
     this.productForm.markAllAsTouched();
   }
 }
-
 deleteProduct(productId: number): void {
     Swal.fire({
       title: 'Are you sure?',
@@ -215,9 +192,6 @@ deleteProduct(productId: number): void {
       }
     });
   }
-  
-        
-
   // Assuming Product interface has been defined
   changeProductStatus(productId: number, checked: boolean): void {
     const newStatus = checked ? 1 : 0;
@@ -234,9 +208,7 @@ deleteProduct(productId: number): void {
         }
     );
 }
-
-
-  loadProducts(): void {
+ loadProducts(): void {
     // debugger;
     this.productService.getAllproduct().subscribe(
       (response : any) => {
@@ -247,9 +219,8 @@ deleteProduct(productId: number): void {
           ...product,
           category_name: this.getCategoryNameById(product.category_id)
         }));
-
-        console.log(response);
         this.loading = false;
+        console.log(response);
         // Debugging line
         // this.products = response.data; // Assuming data is the array of products
         // console.log('Products:', this.products); // Debugging line
@@ -268,7 +239,6 @@ deleteProduct(productId: number): void {
     this.loadCategories();
     this.loadProducts();
   }
-
   showDialog() {    
     this.productForm.reset();
     this.visible = true;
