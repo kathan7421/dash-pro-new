@@ -1,53 +1,4 @@
-<!-- Button trigger modal -->
-<!-- <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
-    Add New Category
-</button> -->
-<!-- add modal  -->
-<!-- Modal -->
-<!-- <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Add New Category</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <form [formGroup]="categoryForm" (ngSubmit)="onSubmit()" >
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label for="inputName">Name</label>
-                        <input type="text" class="form-control" id="inputName" placeholder="Enter name" formControlName="name">
-                        <div *ngIf="categoryForm.get('name')?.invalid && categoryForm.get('name')?.touched" class="text-danger">Name is required</div>
-                    </div>
-                    <div class="form-group">
-                        <label for="inputDescription">Description</label>
-                        <textarea class="form-control" id="inputDescription" placeholder="Enter description" formControlName="description"></textarea>
-                        <div *ngIf="categoryForm.get('description')?.invalid && categoryForm.get('description')?.touched" class="text-danger">Description is required</div>
-                    </div>
-                    <div class="form-group">
-                        <label for="inputImage">Image</label>
-                        <div class="input-group">
-                            <div class="custom-file">
-                                <input type="file" class="custom-file-input" id="inputImage" formControlName="image"  (change)="onFileChange($event)">
-                                <label class="custom-file-label" for="inputImage">Choose image</label>
-                            </div>
-                        </div>
-                        <div *ngIf="categoryForm.get('image')?.invalid && categoryForm.get('image')?.touched" class="text-danger">Image is required</div>
-                        <div *ngIf="imagePreviewUrl" class="mt-2">
-                            <img [src]="imagePreviewUrl" class="img-fluid" alt="Preview">
-                        </div>
-                    </div>
-                  
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary">Submit</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div> -->
+
 <p-button (click)="showDialog()" label="Add Category +"></p-button>
 <p-dialog header="{{ isEditMode ? 'Edit Category' : 'Add New Category' }}" [modal]="true" [(visible)]="visible" [style]="{ width: '50em' }">
     <form [formGroup]="categoryForm" (ngSubmit)="onSubmit()">
@@ -60,13 +11,14 @@
         </div>
         
         <div class="flex align-items-center gap-3 mb-3">
-            <input type="file" (change)="onFileChange($event)" accept="image/*" />
+            <input type="file" (change)="onFileChange($event)" accept="image/*" formControlName="image" />
             <div *ngIf="categoryForm.controls['image'].invalid && categoryForm.controls['image'].touched && !isEditMode" class="text-danger">
                 Image is required
             </div>
-            <div *ngIf="uploadedImageUrl">
-                <img [src]="uploadedImageUrl" alt="Uploaded Image" style="width: 100px; height: auto;">
-            </div>
+            <div *ngIf="imagePreviewUrl">
+                <img [src]="imagePreviewUrl" alt="Preview Image">
+              </div>
+            
         </div>
         
         <div class="flex align-items-center gap-3 mb-3">
@@ -84,38 +36,6 @@
     </form>
 </p-dialog>
 <!-- new form end -->
-
-<!-- edit modal  -->
-<!-- <p-dialog header="Category Form" [(visible)]="display" [modal]="true" [responsive]="true" [style]="{width: '500px'}">
-    <form [formGroup]="categoryeditForm" (ngSubmit)="oneditSubmit()">
-        <div class="modal-body">
-            <div class="form-group">
-                <label for="inputName">Name</label>
-                <input type="text" class="form-control" id="inputName" placeholder="Enter name" formControlName="name">
-                <div *ngIf="categoryeditForm.get('name')?.invalid && categoryeditForm.get('name')?.touched" class="text-danger">Name is required</div>
-
-            </div>
-            <div class="form-group">
-                <label for="inputDescription">Description</label>
-                <textarea class="form-control" id="inputDescription" placeholder="Enter description" formControlName="description"></textarea>
-                <div *ngIf="categoryeditForm.get('description')?.invalid && categoryeditForm.get('description')?.touched" class="text-danger">Description is required</div>
-            </div>
-            <div class="form-group">
-                <label for="inputImage">Image</label>
-                <input type="file" class="form-control-file" id="inputImage" (change)="onFileChangeEdit($event)" accept="image/*">
-                <div *ngIf="categoryeditForm.get('image')?.invalid && categoryeditForm.get('image')?.touched" class="text-danger">Image is required</div>
-                <img *ngIf="getPreviewImage()" [src]="getPreviewImage()" class="img-fluid mt-2" alt="Category Image">
-                
-            </div>
-         
-        </div>
-        <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" (click)="hideDialog()">Close</button>
-            <button type="submit" class="btn btn-primary">Submit</button>
-        </div>
-    </form>
-</p-dialog> -->
-
 
 <!-- data grid table  -->
 <div>

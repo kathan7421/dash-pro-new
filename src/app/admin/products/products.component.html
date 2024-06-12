@@ -45,9 +45,9 @@
             <div *ngIf="productForm.controls['image'].invalid && productForm.controls['image'].touched && !isEditMode" class="text-danger">
                 Image is required.
             </div>
-            <div *ngIf="uploadedImageUrl && (isEditMode && uploadedImageUrl)">
+            <div *ngIf="uploadedImageUrl && isEditMode">
                 <img [src]="uploadedImageUrl" alt="Uploaded Image" style="width: 100px; height: auto;">
-            </div>
+              </div>
         </div>
         <div class="flex align-items-center gap-3 mb-3">
             <label for="description" class="font-semibold w-6rem">Description</label>

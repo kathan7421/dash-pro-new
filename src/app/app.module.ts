@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
+import { BrowserModule,Title } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -40,6 +40,9 @@ import { BannersComponent } from './admin/banners/banners.component';
 import {ChartModule} from 'primeng/chart';
 import { OrderStatusChartComponent } from './admin/orders/order-status-chart/order-status-chart.component';
 import { NotFoundComponent } from './admin/not-found/not-found.component';
+import { CountryComponent } from './admin/country/country.component';
+import { GlobalnotfoundComponent } from './admin/globalnotfound/globalnotfound.component';
+import { HomeComponent } from './frontend/home/home.component';
 
 
 @NgModule({
@@ -57,6 +60,9 @@ import { NotFoundComponent } from './admin/not-found/not-found.component';
     BannersComponent,
     OrderStatusChartComponent,
     NotFoundComponent,
+    CountryComponent,
+    GlobalnotfoundComponent,
+    HomeComponent,
    
   ],
   imports: [
@@ -87,6 +93,7 @@ import { NotFoundComponent } from './admin/not-found/not-found.component';
   providers: [
     MessageService,
     DialogService,
+    Title,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,

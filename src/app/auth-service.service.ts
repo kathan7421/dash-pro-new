@@ -51,7 +51,7 @@ currentUserValue: any;
   logout() {
     localStorage.removeItem('currentUser');
     this.currentUserSubject.next(null);
-    this.router.navigate(['/login']);
+    this.router.navigate(['admin/login']);
   }
 
   isLoggedIn(): boolean {

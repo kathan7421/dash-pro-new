@@ -36,7 +36,7 @@ export class ProductsComponent implements OnInit {
       price: ['', Validators.required],
       qty: ['', Validators.required],
       image: [''],
-      product_no: [''],
+      sku: [''],
       category_id: ['', Validators.required],  // Hardcoded for now, adjust as necessary
       slug: [''] 
     });
@@ -55,20 +55,22 @@ loadCategories(): void {
     }
   );
 }
- onFileChange(event: any): void {
-    const files = event.target.files;
-    const file = files[0];
-  
-    if (files && file) {
-      const reader = new FileReader();
+onFileChange(event: any): void {
+  const files = event.target.files;
+  const file = files[0];
+
+  if (files && file) {
+    const reader = new FileReader();
     reader.onload = () => {
-        this.base64textString = reader.result as string;
-        this.productForm.patchValue({ image: this.base64textString });
-        this.uploadedImageUrl = this.base64textString;
-      };
-      reader.readAsDataURL(file);
-    }
+      this.base64textString = reader.result as string;
+      this.productForm.patchValue({ image: this.base64textString });
+      this.uploadedImageUrl = this.base64textString; // Update uploadedImageUrl with the new image
+      // debugger;
+    };
+    reader.readAsDataURL(file);
   }
+}
+
 setEditMode(isEdit: boolean) {
   this.isEditMode = isEdit;
 }
@@ -143,7 +145,7 @@ onSubmit(): void {
         image: productValue.image!,
         qty: productValue.qty,
         slug: productValue.slug,
-        product_no: productValue.product_no,
+        sku: productValue.sku,
         category_id: this.temp.value + ''
       };
 
@@ -168,7 +170,7 @@ onSubmit(): void {
 deleteProduct(productId: number): void {
     Swal.fire({
       title: 'Are you sure?',
-      text: 'You will not be able to recover this category!',
+      text: 'You will not be able to recover this Product!',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonText: 'Yes, delete it!',

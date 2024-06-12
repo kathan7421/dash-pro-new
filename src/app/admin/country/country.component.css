@@ -1,0 +1,16 @@
+img {
+    width: 80px;
+    height: 80px;
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+}
+button {
+    margin-right: 5px !important;
+}
+input {
+    width: 100%;
+}
+textarea{
+    width: 100%;
+}

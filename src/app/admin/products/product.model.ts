@@ -8,7 +8,7 @@ export interface Product {
     category_id: Catrgories;
     slug: string;
     status: number;
-    product_no:any;
+    sku:any;
     image?: string;
     // updated_at: string;
     // created_at: string;
@@ -22,7 +22,7 @@ export interface Product {
     qty: string;
     category_id: string;
     slug: string;
-    product_no:string;
+    sku:string;
     status?: number;
     image: string;
     // updated_at: string;

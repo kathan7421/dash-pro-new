@@ -61,22 +61,32 @@ export class CategoryComponent implements OnInit {
     this.display = true;
   }
 
+
   onFileChange(event: any): void {
     const files = event.target.files;
     const file = files[0];
-
+  
     if (files && file) {
       const reader = new FileReader();
-
+  
       reader.onload = () => {
         this.base64textString = reader.result as string;
         this.categoryForm.patchValue({ image: this.base64textString });
         this.uploadedImageUrl = this.base64textString;
+        this.imagePreviewUrl = this.base64textString; // Update image preview URL with uploaded image
       };
-
+  
       reader.readAsDataURL(file);
+    } else {
+      // Clear the image preview if no file is selected
+      this.imagePreviewUrl = null;
     }
   }
+  
+  
+  
+
+
 
   getPreviewImage(): string | ArrayBuffer | null {
     if (!this.base64textString && this.imagePreviewUrl) {
@@ -91,32 +101,68 @@ export class CategoryComponent implements OnInit {
     if (this.categoryForm.valid) {
       const formData = this.categoryForm.value;
       if (this.isEditMode) {
-        if (!this.base64textString) {
-          // No new image uploaded, so keep the existing image
-          formData.image = this.editingCategory.image;
+        // Check if a new image is uploaded or if the existing image is removed
+        if (this.base64textString && this.categoryForm.value.image != null) {
+          // New image uploaded, update the image data
+          formData.image = this.base64textString;
+          this.imagePreviewUrl = this.base64textString;
+        } else {
+          // No new image uploaded, check if the editing category has an image
+          if (this.editingCategory.image) {
+            // Retain the existing image if it exists
+            formData.image = '';
+            this.imagePreviewUrl = this.editingCategory.image; // Show old image
+          } else {
+            // No existing image, set image property to null
+            formData.image = null;
+            this.imagePreviewUrl = this.editingCategory.image; // Clear image preview
+          }
         }
         this.updateCategory(this.editingCategory.id, formData);
       } else {
+        // Add new category
         this.addCategory(formData);
       }
     } else {
-      this.markAllAsTouched();
+      // Handle form validation errors
+      this.toastr.error('Please fill in all required fields.');
     }
   }
+  
+  
+  
+  
+  
+  
+  
+
   
   setEditMode(isEdit: boolean) {
     this.isEditMode = isEdit;
   }
   openEditDialog(categoryId: number): void {
     this.setEditMode(true);
+    this.categoryForm.reset();
     this.categoryService.getCategoryById(categoryId).subscribe(
       (response: any) => {
+        console.log('Category response:', response); // Log the response to see the data structure
+  
         this.editingCategory = response.data;
-        this.categoryForm.patchValue(response.data);
+        // Set the form values without the image
+        this.categoryForm.patchValue({
+          name: response.data.name,
+          description: response.data.description,
+          // Do not patch the image value here
+        });
+  
         // Check if a new image is uploaded; if not, display the old image
-        if (!this.base64textString) {
+        const imageControl = this.categoryForm.get('image');
+        if (imageControl !== null && !imageControl.value && !this.base64textString) {
+          // If no new image is selected and no base64 string exists, set uploadedImageUrl to the existing image URL
           this.uploadedImageUrl = response.data.image;
+          this.imagePreviewUrl = response.data.image; // Set the image preview URL
         }
+  
         this.visible = true;
       },
       error => {
@@ -124,6 +170,7 @@ export class CategoryComponent implements OnInit {
       }
     );
   }
+  
   
   hideDialog() {
     this.display = false;
@@ -139,7 +186,6 @@ export class CategoryComponent implements OnInit {
         this.hideDialog();
       },
       error => {
-        console.error('Error adding category:', error);
         this.toastr.error('Error adding category');
       }
     );
@@ -148,12 +194,17 @@ export class CategoryComponent implements OnInit {
   updateCategory(categoryId: number, updatedData: any): void {
     this.categoryService.updateCategory(categoryId, updatedData).subscribe(
       response => {
+        // console.log("asdfa",response);
+        
         this.toastr.success('Category updated successfully');
+        this.categoryForm.reset();
+        this.base64textString = null; // Clear base64textString after update
+        this.imagePreviewUrl = null; // Clear imagePreviewUrl after update
         this.hideDialog();
         this.loadCategories();
+        
       },
       error => {
-        console.error('Error updating category:', error);
         this.toastr.error('Error updating category');
       }
     );
@@ -226,3 +277,8 @@ export class CategoryComponent implements OnInit {
     });
   }
 }
+
+
+
+
+

@@ -1,0 +1,55 @@
+<!-- <button (click)="showDialog()" class="btn btn-primary">Add Country +</button> -->
+<button (click)="showDialog()" class="btn btn-primary">Add Country +</button>
+<p-dialog header="{{ isEditMode ? 'Edit Country' : 'Add New Country' }}" [(visible)]="displayDialog" [modal]="true" [style]="{ width: '50em' }" (onHide)="closeDialog()">
+  <form [formGroup]="countryForm" (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <label for="name">Name</label>
+      <input type="text" class="form-control" id="name" formControlName="name">
+      <div *ngIf="countryForm.controls['name'].invalid && countryForm.controls['name'].touched" class="text-danger">Name is required</div>
+    </div>
+    <div class="form-group">
+      <label for="description">Description</label>
+      <textarea class="form-control" id="description" formControlName="description"></textarea>
+    </div>
+    <div class="form-group">
+      <label for="image">Image</label>
+      <input type="file" class="form-control-file" formControlName="image" id="image" (change)="onFileChange($event)" accept="image/*">
+      <img *ngIf="imagePreviewUrl" [src]="imagePreviewUrl" alt="Image Preview" class="img-fluid mt-3">
+    </div>
+    <button type="submit" class="btn btn-primary">{{ isEditMode ? 'Update' : 'Add' }}</button>
+  </form>
+</p-dialog>
+
+
+
+  <p-table [value]="countries" dataKey="id" [rowHover]="true" [rows]="10" [showCurrentPageReport]="true" [rowsPerPageOptions]="[10,25,50]" [paginator]="true" [filterDelay]="0" [globalFilterFields]="['name','status']">
+    <ng-template pTemplate="header">
+        <tr>
+            <th>Index</th>
+            <th pSortableColumn="id">Country ID <p-sortIcon field="id"></p-sortIcon></th>
+            <th pSortableColumn="name">Name <p-sortIcon field="name"></p-sortIcon></th>
+            <th pSortableColumn="name">Description <p-sortIcon field="description"></p-sortIcon></th>
+
+            <th>Image</th>
+             <th>Status</th>
+            <th>Action</th> 
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-country let-i="rowIndex">
+        <tr>
+            <td>{{ i + 1 }}</td>
+            <td>{{ country.id }}</td>
+            <td>{{ country.name }}</td>
+            <td>{{ country.description }}</td>
+            <td><img [src]="country.image" alt="Country Image"></td>
+           
+            <td>
+                <p-inputSwitch class="switch" [ngModel]="country.status === '1'" (onChange)="changeCountryStatus(country.id, $event.checked)"></p-inputSwitch>
+            </td>
+            <td>
+                <button class="btn btn-primary" (click)="openEditDialog(country.id)"><i class="fas fa-edit"></i></button>
+                <button class="btn btn-danger" (click)="deleteCountry(country.id)"><i class="fas fa-trash"></i></button>
+            </td>
+        </tr>
+    </ng-template>
+</p-table>
